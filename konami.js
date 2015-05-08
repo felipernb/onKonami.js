@@ -36,10 +36,14 @@ var onKonami = (function () {
     var key = e && (e.keyCode || e.key);
     var now = Date.now();
     if (now - this._lastKeyPress > this._timeout) {
+      // Timed out, expect the combo to start again from the first key
       this._currPosition = 0;
     }
+    // if the key pressed matches the expected key
     if (key === this._code[this._currPosition]) {
+      // and if the current position is the last key in the combination
       if (++this._currPosition === this._code.length) {
+        e.preventDefault();
         this._callback();
         this._currentPosition = 0;
       }
@@ -49,8 +53,8 @@ var onKonami = (function () {
     this._lastKeyPress = now;
   };
 
-  return function onKonami(callback) {
-    var konamiHandler = new KonamiHandler(callback);
+  return function onKonami(callback, timeout) {
+    var konamiHandler = new KonamiHandler(callback, timeout);
     window.addEventListener('keydown',
         konamiHandler.handleKey.bind(konamiHandler), true);
   };
